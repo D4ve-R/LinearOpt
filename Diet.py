@@ -68,6 +68,12 @@ foods = [ 'hamburger', 'chicken', 'hot dog', 'fries', 'macaroni', 'salad', 'milk
 
 prob = LpProblem("diet", LpMinimize)
 lpVars = LpVariable.dicts('', foods, 0)
+
+# min Sum( c^f * x)
+# s.t.
+#   Sum( a^f,n * x <= maxN )
+#   Sum( a^f,n * x >= minN)
+
 prob.setObjective(lpSum([cost[food] * lpVars[food] for food in foods]))
 
 for nut in nutrition: 

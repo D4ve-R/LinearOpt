@@ -13,6 +13,12 @@ priceTrain = 10
 maxMoney = 300
 minDist = 40
 
+# min 2x + y
+# s.t.
+#   x + y >= 40
+#   5x + 10y <= 300
+#   x, y >= 0
+
 prob.setObjective(timeBoat * x_B + timeTrain * x_Z)
 prob += priceBoat * x_B + priceTrain * x_Z <= maxMoney
 prob += x_B + x_Z >= minDist
@@ -34,6 +40,7 @@ fig.suptitle('Giffin Paradox')
 axs[0].plot(x, -x + minDist, color='green')
 axs[0].plot(x, -(priceBoat/priceTrain)*x+(maxMoney/priceTrain), color='blue')
 axs[0].grid()
+# priceBoat += 1
 axs[1].plot(x, -x + minDist, color='green')
 axs[1].plot(x, -((priceBoat+1)/priceTrain)*x+(maxMoney/priceTrain), color='blue')
 axs[1].grid()
