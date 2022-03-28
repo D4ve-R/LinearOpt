@@ -28,7 +28,7 @@ if(prob.status):
     print("Objective value: ", pulp.value(prob.objective))
     print(20*"#")
 
-x= np.linspace(0,50)
+x = np.linspace(0,50)
 fig, axs = plt.subplots(2)
 fig.suptitle('Giffin Paradox')
 axs[0].plot(x, -x + minDist, color='green')
