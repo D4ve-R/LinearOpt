@@ -1,5 +1,4 @@
 from pulp import *
-import numpy as np
 
 # Verkaufspreis pro Papiersorte
 price=[128, 50, 38, 69, 54, 112, 38, 40, 62, 49]
@@ -41,36 +40,21 @@ productivity=[
 mCount = len(machineCapacity)
 machines = range(mCount)
 papers = range(len(price))
-npProd = np.array(productivity)
-npCost = np.array(cost)
-npProfit = np.empty((len(price), mCount))
-
-for i in papers:
-    npProfit[i] = npProd[i] * price[i]
-c = npProfit - npCost
 
 prob = LpProblem('Paper', LpMaximize)
-xDict = LpVariable.dicts('x',range(mCount * len(price)), 0)
 
 # x is a vector converted from matrix of dim 10x6 = 1x60
 # x[i][j] => x[j + (i * len(x[i]))]
+xDict = LpVariable.dicts('x',range(mCount * len(price)), 0)
 x = list(xDict.values())
-prob.setObjective(lpSum([[c[row][val] * x[row * mCount + val] for val in machines] for row in papers]))
 
-tmp = None
+prob.setObjective(lpSum([[(productivity[row][col] * price[row] - cost[row][col]) * x[row * mCount + col] for col in machines] for row in papers]))
+
 for i in papers:
-    for j in machines:
-        tmp += productivity[i][j] * x[j + (i * mCount)]
-    prob += tmp <= maxTons[i]
-    tmp = None
-
+    prob += lpSum([productivity[i][j] * x[j +(i * mCount)] for j in machines]) <= maxTons[i]
 for i in machines:
-    for j in papers:
-        tmp += x[i + (j * mCount)]
-    prob += tmp <= machineCapacity[i]
-    tmp = None
+    prob += lpSum([x[i + (j * mCount)] for j in papers]) <= machineCapacity[i]
 
-#print(prob)
 prob.solve()
 print("Status: ", LpStatus[prob.status], "\n")
 if(prob.status):
