@@ -48,7 +48,7 @@ prob = LpProblem('Paper', LpMaximize)
 xDict = LpVariable.dicts('x',range(mCount * len(price)), 0)
 x = list(xDict.values())
 
-prob.setObjective(lpSum([[(productivity[row][col] * price[row] - cost[row][col]) * x[row * mCount + col] for col in machines] for row in papers]))
+prob.setObjective(lpSum([[(productivity[i][j] * price[i] - cost[i][j]) * x[i * mCount + j] for j in machines] for i in papers]))
 
 for i in papers:
     prob += lpSum([productivity[i][j] * x[j +(i * mCount)] for j in machines]) <= maxTons[i]
