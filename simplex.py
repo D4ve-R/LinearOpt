@@ -7,10 +7,12 @@ import numpy as np
 # max c * x
 # s.t. An * x <= b
 def simplex(An, c, b):
-    N = list(np.arange(len(c)))
-    B = list(np.arange(len(c),len(c) + len(b)))
-    x = np.concatenate((np.zeros(len(c)), b))
-    c = np.concatenate((c, np.zeros(len(b))))
+    n = len(c)
+    m = len(b)
+    N = list(np.arange(n))
+    B = list(np.arange(n, n + m))
+    x = np.concatenate((np.zeros(n), b))
+    c = np.concatenate((c, np.zeros(m)))
     A = np.concatenate((An, np.eye(len(An))), axis=1)
     it = 0
 
@@ -20,24 +22,17 @@ def simplex(An, c, b):
         print("N = ", N)
         print("B = ", B)
         it += 1
-        cb = np.array(c[B])
-        y = np.linalg.solve(A[:,B].T, cb) 
-        cn = np.array(c[N], dtype='float64')
-        cn -= np.matmul(A[:,N].T, y)
+        y = np.linalg.solve(A[:,B].T, c[B]) 
+        cn = c[N] - np.matmul(A[:,N].T, y)
         print("cN = ", cn)
+
         if np.all(np.less_equal(cn, np.zeros(cn.shape))):
             print("Finished")
-            print("x = ",x)
+            print("x = ",x[np.arange(n)])
             exit()
 
-        j = -1
-        for i in N:
-            if(c[i] > 0):
-                j = i
-                print("selected j = ", j)
-                break
-
-        if j < 0: exit()
+        j = np.where(c == np.amax(c[N]))[0][0]
+        print("selected j = ", j)
 
         w = np.linalg.solve(A[:,B], A[:,j])
         if np.all(np.less_equal(w, np.zeros(w.shape))):
@@ -45,7 +40,7 @@ def simplex(An, c, b):
             exit()
 
         t = np.amin(x[B]/w)
-        idx = np.argmin(x[B]/w) + len(N)
+        idx = np.argmin(x[B]/w) + n
         print("selected i = ", idx)
         x[B] -= t * w
         x[j] = t
