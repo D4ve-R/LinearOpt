@@ -4,13 +4,16 @@ import numpy as np
 # An : 2d array constraint matrix
 # c : 1d array  factor c * x
 # b : 1d array  constraint vector
-# B : 1d array of base vars indices
-# N : 1d array of non-base vars indices
-def simplex(An, c, b, N, B):
-    x = np.concatenate((np.zeros(len(N)), b))
-    c = np.concatenate((c, np.zeros(len(B))))
+# max c * x
+# s.t. An * x <= b
+def simplex(An, c, b):
+    N = list(np.arange(len(c)))
+    B = list(np.arange(len(c),len(c) + len(b)))
+    x = np.concatenate((np.zeros(len(c)), b))
+    c = np.concatenate((c, np.zeros(len(b))))
     A = np.concatenate((An, np.eye(len(An))), axis=1)
     it = 0
+
     while True:
         print(20*"-")
         print("Iteration No. ", it)
@@ -55,8 +58,6 @@ def simplex(An, c, b, N, B):
         #exit()
 
 
-B = [2,3,4]
-N = [0,1]
 b = [120,160,43]
 c = [5,4]
 muesli = [
@@ -65,5 +66,13 @@ muesli = [
         [1,1],
         ]
 
+b2 = [120,160,43,82]
+muesli2 = [
+        [2,3],
+        [4,1],
+        [1,1],
+        [2,1]
+        ]
+
 if __name__ == '__main__':
-    simplex(muesli, c, b, N, B)
+    simplex(muesli2, c, b2)
