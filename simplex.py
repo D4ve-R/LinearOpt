@@ -69,5 +69,13 @@ muesli2 = [
         [2,1]
         ]
 
+test = [
+        [2,-1,2,1,0,0,1,0,0],
+        [-2,3,-1,0,-1,0,0,1,0],
+        [1,-1,2,0,0,-1,0,0,1]
+        ]
+btest = [4,5,1]
+ctest = [-1,-1,-1]
+
 if __name__ == '__main__':
-    simplex(muesli2, c, b2)
+    simplex(test, ctest, btest)

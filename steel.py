@@ -89,24 +89,28 @@ routes = LpVariable.dicts("route_", costs, 0)
 #print(routes)
 prob.setObjective(lpSum([routes[(i, j)] * costs[(i, j)] for i in cities for j in cities]))
 
-prob += routes[('YOU','ALB')] + routes[('CIN','ALB')] >= 3000
-prob += routes[('CIN','HOU')] + routes[('KAN','HOU')] >= 7000
-prob += routes[('KAN','TEM')] + routes[('CHI','TEM')] >= 4000
-prob += routes[('CHI','GAR')] + routes[('PIT','GAR')] >= 6000
-
-prob += routes[('YOU','ALB')] + routes[('YOU','CIN')] + routes[('YOU','KAN')] + routes[('YOU','CHI')] <= 15000
-prob += routes[('PIT','GAR')] + routes[('PIT','CHI')] + routes[('PIT','KAN')] + routes[('PIT','CIN')] <= 15000
 for i in cities:
+    prob += lpSum([ routes[(j,i)] for j in cities ]) >= demand[i]
     for j in cities:
         prob += routes[(i,j)] <= maxFlow[(i,j)]
         prob += routes[(i,j)] >= minFlow[(i,j)]
+
+for factory in ['YOU','PIT']:
+    prob += lpSum([routes[(factory,i)] for i in cities]) <= capacities[factory]
+
+for store in ['CIN','KAN','CHI']:
+    prob += (lpSum([routes[(i,store)] for i in cities]) - lpSum([routes[(store, i)] for i in cities ]) == 0)
 
 prob.solve()
 
 print("Status: ", LpStatus[prob.status], "\n")
 if(prob.status):
     print(20*"#")
-    [print(f"Route ({i}, {j})",value(routes[(i,j)])) for i in cities for j in cities]
+    for i in cities:
+        for j in cities:
+            if value(routes[(i,j)]) > 0:
+                print(f"Route ({i}, {j})",value(routes[(i,j)]))          
+    #[print(f"Route ({i}, {j})",value(routes[(i,j)])) for i in cities for j in cities]
     print(20*"-")
     print("max Cost:", value(prob.objective))
     print(20*"-")
